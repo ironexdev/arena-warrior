@@ -1,0 +1,10 @@
+export const ENVIRONMENT = process.env.VUE_APP_ENVIRONMENT
+export const PROTOCOL = process.env.VUE_APP_PROTOCOL
+export const DOMAIN = process.env.VUE_APP_DOMAIN
+export const API_PROTOCOL = process.env.VUE_APP_API_PROTOCOL
+export const API_DOMAIN = process.env.VUE_APP_API_DOMAIN
+export const API_URL = API_PROTOCOL + API_DOMAIN
+export const API_AUTHENTICATION_ENDPOINT = API_URL + "/authentication"
+export const API_GRAPHQL_ENDPOINT = API_PROTOCOL + API_DOMAIN + "/graphql"
+export const LANGUAGE = process.env.VUE_APP_LANGUAGE
+export const LOCALE = process.env.VUE_APP_LOCALE

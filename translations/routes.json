@@ -1,0 +1,8 @@
+{
+  "home": "/",
+  "login": "/login",
+  "loginWithoutPassword": "/login-without-password",
+  "registration": "/registration",
+  "profile": "/profile",
+  "authorization": "/authorization"
+}

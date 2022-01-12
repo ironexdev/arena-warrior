@@ -1,43 +1,48 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link>
-    <router-link to="/registration">Registration</router-link>
+  <Header></Header>
+  <div class="main">
+    <router-view/>
   </div>
-  <router-view/>
 </template>
 
 <script lang="ts">
-import {defineComponent, provide} from "vue";
-import {useStore} from "vuex";
-import UserService from "@/service/UserService";
-import RegistrationForm from "@/components/Form/RegistrationForm/RegistrationForm";
-import LoginForm from "@/components/Form/LoginForm/LoginForm";
+import {defineComponent, inject} from "vue";
+import Header from "@/components/Header.vue";
+import {userModule} from "@/store/UserModule";
+import {LoggerEnum} from "@/enum/LoggerEnum";
+import {CookieEnum} from "@/enum/CookieEnum";
+import Cookies from "js-cookie";
+import ErrorHandlerServiceInterface from "@/service/ErrorHandler/ErrorHandlerServiceInterface";
+import UserServiceInterface from "@/service/User/UserServiceInterface";
 
 export default defineComponent({
   name: "App",
+  components: {
+    Header
+  },
   setup() {
-    const store = useStore()
+    const errorHandlerService = inject("ErrorHandlerServiceInterface") as ErrorHandlerServiceInterface
+    const userService = inject("UserServiceInterface") as UserServiceInterface
 
-    store.dispatch("XsrfModule/init").then(() => {
-      console.log("Xsrf Token: " + store.getters["XsrfModule/token"])
-    }).then(() => {
-      store.dispatch("UserModule/init").then(() => {
-        if (store.getters["UserModule/securelyAuthenticated"]) {
-          console.log("User is securely authenticated")
-        } else if (store.getters["UserModule/authenticated"]) {
-          console.log("User is authenticated")
-        } else {
-          console.log("User is not authenticated")
-        }
-      })
-    })
+    if (Cookies.get(CookieEnum.AUTHENTICATION_TOKEN)) {
+      initUser()
+    }
 
-    provide<UserService>("UserService", new UserService(store))
-    provide<RegistrationForm>("RegistrationForm", new RegistrationForm())
-    provide<LoginForm>("LoginForm", new LoginForm())
+    async function initUser() {
+      userModule.setAuthenticated(true)
+
+      try {
+        const user = await userService.fetchCurrentUser()
+        userModule.setEmail(user.email)
+      } catch (error: any) {
+        errorHandlerService.handle(LoggerEnum.INIT_USER_FAILED, error)
+      }
+    }
   }
 });
 </script>
 
 <style lang="scss">
+@import "../node_modules/vue-toastification/dist/index.css";
+@import "./assets/styles/index.scss";
 </style>

@@ -1,0 +1,89 @@
+.form {
+  width: 100%;
+  @include clearfix();
+
+  &__field {
+    margin-bottom: 20px;
+    width: 100%;
+
+    &--error {
+      margin-bottom: 10px;
+
+      .form__input {
+        border-color: $cavernPink;
+      }
+    }
+
+    &--float{
+      float: left;
+      width: auto;
+    }
+  }
+
+  &__field-title {
+    color: $tundora;
+    font-size: 14px;
+    margin-bottom: 5px;
+    text-align: right;
+  }
+
+  &__input {
+    border: 2px solid #DDD;
+    border-radius: 5px;
+    height: 40px;
+    line-height: 40px;
+    padding: 0 15px 0 15px;
+    width: 100%;
+
+    &:focus {
+      outline: $toreaBay auto 1px;
+    }
+  }
+
+  &__checkbox-label{
+    cursor: pointer;
+    float: left;
+  }
+
+  &__checkbox{
+    display: block;
+    float: left;
+    margin-top: 4px;
+  }
+
+  &__checkbox-title{
+    display: block;
+    float: left;
+    font-size: 14px;
+    margin-left: 7px;
+  }
+
+  &__errors {
+
+  }
+
+  &__error {
+    color: $wellRead;
+    font-size: 14px;
+    margin-top: 5px;
+    text-align: right;
+  }
+
+  &__submit {
+    background-color: $athensGray;
+    border: none;
+    border-radius: 5px;
+    color: $toreaBay;
+    cursor: pointer;
+    float: right;
+    font-size: 18px;
+    padding: 5px 25px 5px 25px;
+    text-align: center;
+
+    &:disabled{
+      background-color: $gallery;
+      cursor: default;
+      color: $doveGray;
+    }
+  }
+}

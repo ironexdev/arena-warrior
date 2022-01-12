@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
+    "experimentalDecorators": true,
     "target": "esnext",
     "module": "esnext",
     "strict": true,
     "jsx": "preserve",
     "importHelpers": true,
     "moduleResolution": "node",
+    "resolveJsonModule": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -35,8 +37,5 @@
   ],
   "exclude": [
     "node_modules"
-  ],
-  "files": [
-    "src/types/graphql.d.ts"
   ]
 }

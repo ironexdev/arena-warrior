@@ -1,67 +1,36 @@
-import {ActionContext} from "vuex";
-import {State} from "@/store/index";
-import axios from "axios";
-import {API_AUTHENTICATION_ENDPOINT, API_XSRF_ENDPOINT} from "@/Config";
+import {Module, VuexModule, Mutation, getModule} from "vuex-module-decorators"
+import {store} from "@/store/index";
+import Cookies from "js-cookie";
+import {CookieEnum} from "@/enum/CookieEnum";
 
-type Context = ActionContext<UserState, State>;
+@Module({dynamic: true, namespaced: true, name: "userModule", store})
+export default class UserModule extends VuexModule {
+    _authenticated: boolean = false
+    _email: string = ""
 
-export interface UserState {
-    authenticated: boolean,
-    securelyAuthenticated: boolean // true = authenticated via password or e-mail link, false = authenticated via cookies
-}
-
-export default {
-    namespaced: true,
-    state: (): UserState => ({
-        authenticated: false,
-        securelyAuthenticated: false
-    }),
-
-    mutations: {
-        setAuthenticated(state: UserState, authenticated: boolean) {
-            state.authenticated = authenticated
-        },
-        setSecurelyAuthenticated(state: UserState, securelyAuthenticated: boolean) {
-            state.securelyAuthenticated = securelyAuthenticated
-        },
-    },
-    actions: {
-        init(context: Context) {
-            return axios.request({
-                    url: API_AUTHENTICATION_ENDPOINT,
-                    method: "GET",
-                    withCredentials: true
-                }
-            ).then(response => {
-                const authenticated = response.data["authenticated"]
-                const securelyAuthenticated = response.data["securely_authenticated"]
-
-                if (securelyAuthenticated) {
-                    context.dispatch("setSecurelyAuthenticated")
-                } else if (authenticated) {
-                    context.dispatch("setAuthenticated")
-                }
-            })
-        },
-        setUnauthenticated(context: Context) {
-            context.commit("setAuthenticated", false)
-            context.commit("setSecurelyAuthenticated", false)
-        },
-        setAuthenticated(context: Context) {
-            context.commit("setAuthenticated", true)
-            context.commit("setSecurelyAuthenticated", false)
-        },
-        setSecurelyAuthenticated(context: Context) {
-            context.commit("setAuthenticated", true)
-            context.commit("setSecurelyAuthenticated", true)
+    @Mutation
+    setAuthenticated(authenticated: boolean) {
+        if(!authenticated)
+        {
+            Cookies.remove(CookieEnum.AUTHENTICATION_TOKEN)
         }
-    },
-    getters: {
-        authenticated(state: UserState): boolean {
-            return state.authenticated
-        },
-        securelyAuthenticated(state: UserState): boolean {
-            return state.securelyAuthenticated
-        }
+
+        this._authenticated = authenticated
+    }
+
+    get authenticated(): boolean {
+        return this._authenticated
+    }
+
+    @Mutation
+    setEmail(email: string) {
+        this._email = email
+    }
+
+    get email(): string {
+        return this._email
     }
 }
+
+export const userModule = getModule(UserModule);
+
