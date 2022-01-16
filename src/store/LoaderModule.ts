@@ -7,7 +7,7 @@ export default class LoaderModule extends VuexModule {
 
     @Mutation
     start() {
-        this._progress = 80
+        this._progress = 50
     }
 
     @Mutation
