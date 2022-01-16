@@ -1,0 +1,22 @@
+.Vue-Toastification__container {
+  &.top-center {
+    left: 0;
+    margin: 0;
+    padding: 0;
+    top: 0;
+    width: 100%;
+
+    .Vue-Toastification__toast {
+      border-radius: 0;
+      height: 50px;
+      margin-bottom: 5px;
+      max-height: none;
+      max-width: 600px;
+      min-height: 0;
+      min-width: 0;
+      padding: 13px 24px 13px 24px;
+      width: 100%;
+    }
+  }
+}
+

@@ -19,7 +19,7 @@ export default class LoggerService implements LoggerServiceInterface {
         }
     }
 
-    public uncaughtError(error: any): void{
+    public static uncaughtError(error: any): void{
         if(ENVIRONMENT === "production")
         {
             // TODO Sentry

@@ -1,9 +1,9 @@
 export default interface ToastServiceInterface {
-    error(message: string): void
+    error(message: string, options?: object): void
 
-    info(): void
+    info(message: string, options?: object): void
 
-    success(message: string): void
+    success(message: string, options?: object): void
 
-    warning(): void
+    warning(message: string, options?: object): void
 }

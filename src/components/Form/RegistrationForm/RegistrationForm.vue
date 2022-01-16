@@ -45,7 +45,7 @@
     <div class="form__field" :class="{ 'form__field--error' : !passwordMatch}">
       <input class="form__input" v-model="passwordCheck" type="password" placeholder="Password Again">
       <div class="form__errors">
-        <div class="form__error" v-if="!passwordMatch">{{ t.translate("registration_form_error_password_match")}}</div>
+        <div class="form__error" v-if="!passwordMatch">{{ t.translate("registration_form_error_password_match") }}</div>
       </div>
     </div>
 
@@ -54,13 +54,14 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, inject, reactive, ref} from "vue";
+import {computed, defineComponent, inject, reactive, ref} from "vue";
 import RegistrationForm from "@/components/Form/RegistrationForm/RegistrationForm";
 import InvalidFormException from "@/exception/InvalidFormException";
 import {LoggerEnum} from "@/enum/LoggerEnum";
 import ErrorHandlerServiceInterface from "@/service/ErrorHandler/ErrorHandlerServiceInterface";
 import TranslatorServiceInterface from "@/service/Translator/TranslatorServiceInterface";
 import ToastServiceInterface from "@/service/Toast/ToastServiceInterface";
+import {loaderModule} from "@/store/LoaderModule";
 
 export default defineComponent({
   name: "RegistrationForm",
@@ -72,7 +73,7 @@ export default defineComponent({
     // Form
     const form = reactive(inject("RegistrationForm") as RegistrationForm)
     // Other
-    const loading = ref(false)
+    const loading = computed(() => !!loaderModule.progress)
     const passwordCheck = ref(null)
     const passwordMatch = ref(true)
 
@@ -87,8 +88,9 @@ export default defineComponent({
 
     async function registration() {
       try {
+        loaderModule.start()
+
         // Register
-        loading.value = true
         await form.send()
         context.emit("registrationSuccess", true)
 
@@ -100,7 +102,7 @@ export default defineComponent({
           errorHandlerService.handle(LoggerEnum.REGISTRATION_FAILED, error)
         }
       } finally {
-        loading.value = false
+        loaderModule.finish()
       }
     }
 

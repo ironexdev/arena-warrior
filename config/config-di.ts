@@ -1,6 +1,7 @@
 import {ToastInterface, useToast} from "vue-toastification";
 import {userModule} from "@/store/UserModule";
-import {App, inject} from "vue";
+import {App} from "vue";
+
 import RegistrationForm from "@/components/Form/RegistrationForm/RegistrationForm";
 import LoginForm from "@/components/Form/LoginForm/LoginForm";
 import LoginWithoutPasswordForm from "@/components/Form/LoginWithoutPasswordForm/LoginWithoutPasswordForm";
@@ -31,7 +32,8 @@ export default {
         // Services
         const authenticationService = new AuthenticationService(userModule)
         const authorizationService = new AuthorizationService()
-        const loggerService = inject("LoggerServiceInterface") as LoggerServiceInterface
+        const loggerService = new LoggerService()
+
         const toastService = new ToastService(toast)
         // vue-intl.locale === language iso2 (en) instead of locale (en_US)
         const translatorService = new TranslatorService(app.config.globalProperties.$intl)
@@ -51,6 +53,7 @@ export default {
         app.provide<AuthenticationServiceInterface>("AuthenticationServiceInterface", authenticationService)
         app.provide<AuthorizationServiceInterface>("AuthorizationServiceInterface", authorizationService)
         app.provide<ErrorHandlerServiceInterface>("ErrorHandlerServiceInterface", errorHandlerService)
+        app.provide<LoggerServiceInterface>("LoggerServiceInterface", loggerService)
         app.provide<ToastServiceInterface>("ToastServiceInterface", toastService)
         app.provide<TranslatorServiceInterface>("TranslatorServiceInterface", translatorService)
         app.provide<UserServiceInterface>("UserServiceInterface", userService)

@@ -15,9 +15,12 @@
       <router-link :to="{name: 'profile'}" class="header__email">
         {{ email }}
       </router-link>
-      <button class="header__logout" @click.prevent="onLogout(authenticationService)" title="{{ t.translate('header_menu_logout') }}">
+      <button class="header__logout" @click.prevent="onLogout(authenticationService)" :title="t.translate('header_menu_logout')">
         <i class="material-icons">logout</i>
       </button>
+    </div>
+    <div class="header__loader">
+      <div class="header__loader-progress" :style="{ width: progress + '%'}"></div>
     </div>
   </div>
 </template>
@@ -28,6 +31,7 @@ import {userModule} from "@/store/UserModule";
 import {useRoute} from "vue-router";
 import AuthenticationServiceInterface from "@/service/Authentication/AuthenticationServiceInterface";
 import TranslatorServiceInterface from "@/service/Translator/TranslatorServiceInterface";
+import {loaderModule} from "@/store/LoaderModule";
 
 export default defineComponent({
   name: "Header",
@@ -41,15 +45,19 @@ export default defineComponent({
     const routeName = ref(useRoute().name)
 
     const onLogout = (authenticationService: AuthenticationServiceInterface) => {
+      loaderModule.start()
       authenticationService.logout().then(response => {
         location.href = "/login"
       })
     }
 
+    const progress = computed(() => loaderModule.progress)
+
     return {
       authenticationService,
       t: translatorService,
       email,
+      progress,
       routeName,
       userIsAuthenticated: authenticated,
       onLogout
@@ -60,6 +68,7 @@ export default defineComponent({
 
 <style scoped lang="scss">
 @import "../assets/styles/variables";
+@import "../assets/styles/mixins";
 
 .header {
   background-color: $gallery;
@@ -120,6 +129,23 @@ export default defineComponent({
     height: 100%;
     padding: 13px 15px 13px 15px;
     text-decoration: none;
+  }
+
+  &__loader{
+    bottom: 0;
+    height: 2px;
+    left: 0;
+    position: absolute;
+    width: 100%;
+  }
+
+  &__loader-progress{
+    background-color: $toreaBay;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    width: 0;
+    @include transition(0.5s ease width)
   }
 }
 </style>

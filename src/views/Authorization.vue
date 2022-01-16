@@ -25,6 +25,7 @@ import {AuthorizationActionEnum} from "@/enum/AuthorizationActionEnum";
 import AuthenticationServiceInterface from "@/service/Authentication/AuthenticationServiceInterface";
 import UserServiceInterface from "@/service/User/UserServiceInterface";
 import TranslatorServiceInterface from "@/service/Translator/TranslatorServiceInterface";
+import {userModule} from "@/store/UserModule";
 
 export default defineComponent({
   name: "Authorization",
@@ -61,11 +62,18 @@ export default defineComponent({
           })
     }
 
+    async function fetchUserData() {
+      // Fetch User data
+      const user = await userService.fetchCurrentUser()
+      userModule.setEmail(user.email)
+    }
+
     function loginWithoutPassword(authorizationToken: string) {
       const remember = query.remember === "true"
 
       authenticationService.loginWithoutPassword(authorizationToken, remember)
           .then((response: boolean) => {
+            fetchUserData()
             router.push("profile")
           })
           .catch((errorResponse: Error) => {

@@ -1,9 +1,7 @@
 <template>
   <h1>{{ t.translate("registration_page_title") }}</h1>
   <RegistrationForm @registrationSuccess="registrationStatusListener($event)" v-if="!registrationStatus"></RegistrationForm>
-  <div v-else>
-    {{ t.translate("registration_page_success") }}
-  </div>
+  <div class="registration-success" v-else v-html="t.translate('registration_page_success')"></div>
 </template>
 
 <script lang="ts">
@@ -35,5 +33,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-
+  .registration-success{
+    margin-top: 20px;
+  }
 </style>

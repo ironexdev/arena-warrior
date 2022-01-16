@@ -9,7 +9,6 @@ import {createIntl} from "vue-intl";
 import {LANGUAGE} from "../config/config";
 import messages from "@/../translations/messages.json"
 import LoggerService from "@/service/Logger/LoggerService";
-import LoggerServiceInterface from "@/service/Logger/LoggerServiceInterface";
 
 let app = createApp(App)
 
@@ -21,16 +20,18 @@ app.use(router)
         closeOnClick: true,
         pauseOnFocusLoss: true,
         pauseOnHover: true,
-        draggable: true,
+        draggable: false,
         draggablePercent: 0.6,
         showCloseButtonOnHover: false,
-        hideProgressBar: true,
+        hideProgressBar: false,
         closeButton: "button",
         icon: {
             iconClass: "material-icons",
             iconChildren: "rocket_launch",
             iconTag: "i"
         },
+        maxToasts: 3,
+        transition: "Vue-Toastification__fade",
         rtl: false
     })
     .use(
@@ -41,10 +42,7 @@ app.use(router)
         }))
     .use(configDi)
 
-const loggerService = new LoggerService()
-app.provide<LoggerServiceInterface>("LoggerServiceInterface", loggerService)
-
-app.config.errorHandler = (error) => loggerService.uncaughtError(error);
+app.config.errorHandler = (error) => LoggerService.uncaughtError(error);
 
 app.mount("#app")
 

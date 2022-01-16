@@ -13,7 +13,7 @@
     <div class="form__field form__field--float" :class="{ 'form__field--error' : !form.remember.valid}">
       <label class="form__checkbox-label">
         <input class="form__checkbox" :placeholder="form.remember.title" :title="form.remember.title" v-model="form.remember.value" name="remember" type="checkbox">
-        <span class="form__checkbox-title">{{ form.remember.title}}</span>
+        <span class="form__checkbox-title">{{ form.remember.title }}</span>
       </label>
       <div class="form__errors">
         <div class="form__error" v-for="error in form.remember.errors">{{ error }}</div>
@@ -25,17 +25,18 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, inject, reactive, ref} from "vue";
+import {computed, defineComponent, inject, reactive} from "vue";
 import LoginWithoutPasswordForm from "@/components/Form/LoginWithoutPasswordForm/LoginWithoutPasswordForm";
 import InvalidFormException from "@/exception/InvalidFormException";
 import {LoggerEnum} from "@/enum/LoggerEnum";
 import ErrorHandlerServiceInterface from "@/service/ErrorHandler/ErrorHandlerServiceInterface";
 import TranslatorServiceInterface from "@/service/Translator/TranslatorServiceInterface";
 import ToastServiceInterface from "@/service/Toast/ToastServiceInterface";
+import {loaderModule} from "@/store/LoaderModule";
 
 export default defineComponent({
   name: "LoginWithoutPasswordForm",
-  setup() {
+  setup(props, context) {
     // Service
     const errorHandlerService = inject("ErrorHandlerServiceInterface") as ErrorHandlerServiceInterface
     const toastService = inject("ToastServiceInterface") as ToastServiceInterface
@@ -43,7 +44,7 @@ export default defineComponent({
     // Form
     const form = reactive(inject("LoginWithoutPasswordForm") as LoginWithoutPasswordForm)
     // Other
-    const loading = ref(false)
+    const loading = computed(() => !!loaderModule.progress)
 
     const onSubmit = () => {
       form.validate()
@@ -55,9 +56,11 @@ export default defineComponent({
 
     async function loginWithoutPassword() {
       try {
+        loaderModule.start()
+
         // Login Without Password
-        loading.value = true
         await form.send()
+        context.emit("lwpSuccess", true)
 
         toastService.success(translatorService.translate("lwp_form_success"))
       } catch (error: any) {
@@ -67,7 +70,7 @@ export default defineComponent({
           errorHandlerService.handle(LoggerEnum.LOGIN_FAILED, error)
         }
       } finally {
-        loading.value = false
+        loaderModule.finish()
       }
     }
 

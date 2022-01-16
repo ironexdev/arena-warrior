@@ -28,12 +28,14 @@
       </div>
     </div>
 
-    <button class="form__submit" type="submit" :disabled="loading">{{ t.translate("login_form_submit") }}</button>
+    <button class="form__submit" type="submit" :disabled="loading">
+      {{ t.translate("login_form_submit") }}
+    </button>
   </form>
 </template>
 
 <script lang="ts">
-import {defineComponent, inject, reactive, ref} from "vue";
+import {computed, defineComponent, inject, reactive} from "vue";
 import LoginForm from "@/components/Form/LoginForm/LoginForm";
 import {useRoute, useRouter} from "vue-router";
 import InvalidFormException from "@/exception/InvalidFormException";
@@ -44,6 +46,7 @@ import ErrorHandlerServiceInterface from "@/service/ErrorHandler/ErrorHandlerSer
 import TranslatorServiceInterface from "@/service/Translator/TranslatorServiceInterface";
 import ToastServiceInterface from "@/service/Toast/ToastServiceInterface";
 import UserServiceInterface from "@/service/User/UserServiceInterface";
+import {loaderModule} from "@/store/LoaderModule";
 
 export default defineComponent({
   name: "LoginForm",
@@ -56,7 +59,7 @@ export default defineComponent({
     // Form
     const form = reactive(inject("LoginForm") as LoginForm)
     // Other
-    const loading = ref(false)
+    const loading = computed(() => !!loaderModule.progress)
     const router = useRouter()
     const route = useRoute()
     const redirect = route.query?.redirect ?? null
@@ -72,8 +75,9 @@ export default defineComponent({
 
     async function login() {
       try {
+        loaderModule.start()
+
         // Login
-        loading.value = true
         await form.send()
 
         // Fetch User data
@@ -89,7 +93,7 @@ export default defineComponent({
           errorHandlerService.handle(LoggerEnum.LOGIN_FAILED, error)
         }
       } finally {
-        loading.value = false
+        loaderModule.finish()
       }
     }
 

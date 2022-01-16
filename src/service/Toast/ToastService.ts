@@ -5,7 +5,7 @@ export default class ToastService implements ToastServiceInterface {
     constructor(private toast: ToastInterface) {
     }
 
-    public error(message: string): void {
+    public error(message: string, options?: object): void {
         this.toast.error(message, {
             icon: {
                 iconClass: "material-icons",
@@ -15,19 +15,19 @@ export default class ToastService implements ToastServiceInterface {
         })
     }
 
-    public info(): void {
+    public info(message: string, options?: object): void {
     }
 
-    public success(message: string): void {
-        this.toast.success(message, {
-            icon: {
-                iconClass: "material-icons",
-                iconChildren: "success",
-                iconTag: "i"
-            }
-        })
+    public success(message: string, options?: object): void {
+        options = options ?? {
+            iconClass: "material-icons",
+            iconChildren: "success",
+            iconTag: "i"
+        };
+
+        this.toast.success(message, options)
     }
 
-    public warning(): void {
+    public warning(message: string, options?: object): void {
     }
 }
