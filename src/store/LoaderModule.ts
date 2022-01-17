@@ -7,7 +7,7 @@ export default class LoaderModule extends VuexModule {
 
     @Mutation
     start() {
-        this._progress = 50
+        this._progress = 80
     }
 
     @Mutation
@@ -16,7 +16,7 @@ export default class LoaderModule extends VuexModule {
 
         setTimeout(() => {
             this._progress = 0
-        }, 500)
+        }, 250)
     }
 
     get progress(): number {

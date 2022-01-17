@@ -14,6 +14,7 @@ import {CookieEnum} from "@/enum/CookieEnum";
 import Cookies from "js-cookie";
 import ErrorHandlerServiceInterface from "@/service/ErrorHandler/ErrorHandlerServiceInterface";
 import UserServiceInterface from "@/service/User/UserServiceInterface";
+import {DOMAIN} from "../config/config";
 
 export default defineComponent({
   name: "App",
@@ -29,11 +30,15 @@ export default defineComponent({
     }
 
     async function initUser() {
-      userModule.setAuthenticated(true)
-
       try {
         const user = await userService.fetchCurrentUser()
-        userModule.setEmail(user.email)
+
+        if (user) {
+          userModule.setAuthenticated(true)
+          userModule.setEmail(user.email)
+        } else { // If user has token in Cookies, but it is deleted from server, then user gets redirected to login page
+          Cookies.remove(CookieEnum.AUTHENTICATION_TOKEN, {domain: "." + DOMAIN})
+        }
       } catch (error: any) {
         errorHandlerService.handle(LoggerEnum.INIT_USER_FAILED, error)
       }
