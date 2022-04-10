@@ -1,3 +1,3 @@
 export enum CookieEnum {
-    AUTHENTICATION_TOKEN = "authenticationToken"
+    AUTHENTICATION_CODE = "authenticationCode"
 }

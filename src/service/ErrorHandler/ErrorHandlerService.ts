@@ -21,7 +21,7 @@ export default class ErrorHandlerService implements ErrorHandlerServiceInterface
         const status = error.response?.status ?? 0
 
         if (status === ResponseStatusCodeEnum.UNAUTHORIZED) { // Redirect to login
-            this.userModule.setAuthenticated(false)
+            this.userModule.logout()
             this.router.push("/login?redirect=" + this.route.path);
         } else if (status >= ResponseStatusCodeEnum.INTERNAL_SERVER_ERROR) { // Show server error
             this.toastService.error(this.translatorService.translate(ErrorMessageEnum.SERVER_ERROR))

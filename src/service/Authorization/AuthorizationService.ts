@@ -7,7 +7,7 @@ export default class AuthorizationService implements AuthorizationServiceInterfa
     constructor() {
     }
 
-    public async createAuthorizationToken(email: string, action: string, remember: boolean): Promise<boolean> {
+    public async createAuthorizationToken(email: string, action: string): Promise<boolean> {
         const response = await axios.request({
                 url: API_GRAPHQL_ENDPOINT,
                 method: "POST",
@@ -20,8 +20,7 @@ export default class AuthorizationService implements AuthorizationServiceInterfa
                     variables: {
                         createAuthorizationTokenInput: {
                             email: email,
-                            action: action,
-                            remember: remember
+                            action: action
                         }
                     }
                 }

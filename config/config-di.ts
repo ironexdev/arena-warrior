@@ -46,6 +46,7 @@ export default {
             userModule
         )
         const userService = new UserService(userModule)
+
         // Factories
         const ruleFactory = new RuleFactory(translatorService)
 

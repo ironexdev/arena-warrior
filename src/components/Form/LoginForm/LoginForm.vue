@@ -17,17 +17,6 @@
       </div>
     </div>
 
-    <!-- Remember Me -->
-    <div class="form__field form__field--float" :class="{ 'form__field--error' : !form.remember.valid}">
-      <label class="form__checkbox-label">
-        <input class="form__checkbox" :placeholder="form.remember.title" :title="form.remember.title" v-model="form.remember.value" name="remember" type="checkbox">
-        <span class="form__checkbox-title">{{ form.remember.title }}</span>
-      </label>
-      <div class="form__errors">
-        <div class="form__error" v-for="error in form.remember.errors">{{ error }}</div>
-      </div>
-    </div>
-
     <button class="form__submit" type="submit" :disabled="loading">
       {{ t.translate("login_form_submit") }}
     </button>
@@ -39,7 +28,6 @@ import {computed, defineComponent, inject, reactive} from "vue";
 import LoginForm from "@/components/Form/LoginForm/LoginForm";
 import {useRoute, useRouter} from "vue-router";
 import InvalidFormException from "@/exception/InvalidFormException";
-import {userModule} from "@/store/UserModule";
 import InvalidEmailOrPasswordException from "@/exception/InvalidEmailOrPasswordException";
 import {LoggerEnum} from "@/enum/LoggerEnum";
 import ErrorHandlerServiceInterface from "@/service/ErrorHandler/ErrorHandlerServiceInterface";
@@ -81,8 +69,7 @@ export default defineComponent({
         await form.send()
 
         // Fetch User data
-        const user = await userService.fetchCurrentUser()
-        userModule.setEmail(user.email)
+        await userService.fetchCurrentUser()
 
         await router.push(redirectRoute)
         toastService.success(translatorService.translate("login_form_success"))

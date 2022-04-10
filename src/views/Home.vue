@@ -12,7 +12,6 @@
 import {computed, defineComponent, inject} from "vue";
 import {userModule} from "@/store/UserModule";
 import TranslatorServiceInterface from "@/service/Translator/TranslatorServiceInterface";
-import ToastServiceInterface from "@/service/Toast/ToastServiceInterface";
 
 export default defineComponent({
   name: "Home",

@@ -7,13 +7,14 @@ import UserModule from "@/store/UserModule";
 import InvalidEmailOrPasswordException from "@/exception/InvalidEmailOrPasswordException";
 import AuthenticationServiceInterface from "@/service/Authentication/AuthenticationServiceInterface";
 import {ResponseStatusCodeEnum} from "@/enum/ResponseStatusCodeEnum";
+import LoginResponse from "@/api/Authentication/Login/LoginResponse";
+import LoginWithoutPasswordResponse from "@/api/Authentication/LoginWithoutPassword/LoginWithoutPasswordResponse";
 
 export default class AuthenticationService implements AuthenticationServiceInterface {
-
     constructor(private userModule: UserModule) {
     }
 
-    public async login(email: string, password: string, remember: boolean): Promise<boolean> {
+    public async login(email: string, password: string): Promise<LoginResponse> {
         try {
             const response = await axios.request({
                     url: API_GRAPHQL_ENDPOINT,
@@ -27,20 +28,19 @@ export default class AuthenticationService implements AuthenticationServiceInter
                         variables: {
                             loginInput: {
                                 email: email,
-                                password: password,
-                                remember: remember
+                                password: password
                             }
                         }
                     }
                 }
             )
 
-            this.userModule.setAuthenticated(true)
+            const responseData = response.data.data.login
+            this.userModule.login({authenticationCode: responseData.authenticationCode, storeCookie: true})
 
-            return response.data.data.login
+            return responseData
         } catch (errorResponse: any) {
-            if(errorResponse?.response?.status === ResponseStatusCodeEnum.FORBIDDEN)
-            {
+            if (errorResponse?.response?.status === ResponseStatusCodeEnum.FORBIDDEN) {
                 throw new InvalidEmailOrPasswordException()
             }
 
@@ -48,7 +48,7 @@ export default class AuthenticationService implements AuthenticationServiceInter
         }
     }
 
-    public async loginWithoutPassword(authorizationToken: string, remember: boolean): Promise<boolean> {
+    public async loginWithoutPassword(authorizationCode: string): Promise<LoginWithoutPasswordResponse> {
         const response = await axios.request({
                 url: API_GRAPHQL_ENDPOINT,
                 method: "POST",
@@ -60,17 +60,17 @@ export default class AuthenticationService implements AuthenticationServiceInter
                     query: LOGIN_WITHOUT_PASSWORD_MUTATION,
                     variables: {
                         loginWithoutPasswordInput: {
-                            authorizationToken: authorizationToken,
-                            remember: remember
+                            authorizationCode: authorizationCode
                         }
                     }
                 }
             }
         )
 
-        this.userModule.setAuthenticated(true)
+        const responseData = response.data.data.loginWithoutPassword
+        this.userModule.login({authenticationCode: responseData.authenticationCode, storeCookie: true})
 
-        return response.data.data.loginWithoutPassword
+        return responseData
     }
 
     public async logout(): Promise<boolean> {
@@ -78,6 +78,7 @@ export default class AuthenticationService implements AuthenticationServiceInter
                 url: API_GRAPHQL_ENDPOINT,
                 method: "POST",
                 headers: {
+                    "Authorization": "Bearer " + this.userModule.authenticationCode,
                     "Content-Type": "application/json"
                 },
                 withCredentials: true,
@@ -87,7 +88,7 @@ export default class AuthenticationService implements AuthenticationServiceInter
             }
         )
 
-        this.userModule.setAuthenticated(false)
+        this.userModule.logout()
 
         return response.data.data.logout
     }

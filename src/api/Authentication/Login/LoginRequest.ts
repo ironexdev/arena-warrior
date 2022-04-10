@@ -3,6 +3,8 @@ mutation ($loginInput: LoginInput!){
   login(
     loginInput: $loginInput
   )
+  {
+    authenticationCode
+  }  
 }
 `
-

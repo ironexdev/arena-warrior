@@ -9,17 +9,6 @@
       </div>
     </div>
 
-    <!-- Remember Me -->
-    <div class="form__field form__field--float" :class="{ 'form__field--error' : !form.remember.valid}">
-      <label class="form__checkbox-label">
-        <input class="form__checkbox" :placeholder="form.remember.title" :title="form.remember.title" v-model="form.remember.value" name="remember" type="checkbox">
-        <span class="form__checkbox-title">{{ form.remember.title }}</span>
-      </label>
-      <div class="form__errors">
-        <div class="form__error" v-for="error in form.remember.errors">{{ error }}</div>
-      </div>
-    </div>
-
     <button class="form__submit" type="submit" :disabled="loading">{{ t.translate("lwp_form_submit") }}</button>
   </form>
 </template>

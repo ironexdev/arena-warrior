@@ -1,7 +1,13 @@
 <template>
   <h1>{{ t.translate("lwp_page_title") }}</h1>
   <LoginWithoutPasswordForm @lwpSuccess="lwpStatusListener($event)" v-if="!lwpStatus"/>
-  <div class="lwp-success" v-else v-html="t.translate('lwp_page_success')"></div>
+  <p class="info info--first" v-if="!lwpStatus">
+    {{ t.translate("lwp_page_info_registration") }}
+    <router-link :to="{ name: 'registration' }">{{ t.translate("lwp_page_info_registration_link") }}</router-link>
+  </p>
+  <p class="lwp-success" v-else>
+    <b>{{ t.translate("lwp_page_success_bold") }}</b>{{ t.translate("lwp_page_success_part2") }}
+  </p>
 </template>
 
 <script lang="ts">
@@ -34,7 +40,18 @@ export default defineComponent({
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-  .lwp-success{
-    margin-top: 20px;
+@import "../assets/styles/variables.scss";
+
+.info {
+  color: $tundora;
+  font-size: 14px;
+
+  &--first {
+    margin: 20px 0 10px 0;
   }
+}
+
+.lwp-success {
+  margin-top: 20px;
+}
 </style>

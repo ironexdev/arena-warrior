@@ -11,7 +11,6 @@ import TranslatorServiceInterface from "@/service/Translator/TranslatorServiceIn
 export default class LoginWithoutPasswordForm extends AbstractForm {
 
     public email: FieldInterface
-    public remember: FieldInterface
 
     constructor(
         private authorizationService: AuthorizationServiceInterface,
@@ -21,13 +20,11 @@ export default class LoginWithoutPasswordForm extends AbstractForm {
         super()
 
         this.email = new Field(this.translatorService.translate("lwp_form_email"), "", [this.ruleFactory.createRequiredRule()])
-        this.remember = new Field(this.translatorService.translate("lwp_form_remember"), true, [])
     }
 
     public getFields(): FieldInterface[] {
         return [
-            this.email,
-            this.remember
+            this.email
         ]
     }
 
@@ -39,8 +36,7 @@ export default class LoginWithoutPasswordForm extends AbstractForm {
         try {
             return await this.authorizationService.createAuthorizationToken(
                 this.email.value,
-                "login_without_password",
-                this.remember.value
+                "login_without_password"
             )
         } catch (errorResponse: any) {
             const responseStatus = errorResponse?.response?.status;

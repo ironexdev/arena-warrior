@@ -5,14 +5,16 @@
     <template v-if="action === activateUserAction">
       <span v-if="state === 'initial'">{{ t.translate("authorization_page_activation_loading") }}</span>
       <span v-else-if="state === 'success'">
-        {{ t.translate("authorization_page_activation_success") }}
+        {{ t.translate("authorization_page_activation_success_part1") }}<router-link :to="{name: 'login'}">{{ t.translate("authorization_page_activation_success_link") }}</router-link>{{ t.translate("authorization_page_activation_success_part2") }}
       </span>
       <span v-else>{{ t.translate("authorization_page_activation_error") }}</span>
     </template>
 
     <template v-if="action === loginWithoutPasswordAction">
       <span v-if="state === 'initial'">{{ t.translate("authorization_page_login_loading") }}</span>
-      <span v-else>{{ t.translate("authorization_page_error") }}</span>
+      <span v-else>
+        {{ t.translate("authorization_page_error_part1") }}<router-link :to="{name: 'loginWithoutPassword'}">{{ t.translate("authorization_page_error_link") }}</router-link>{{ t.translate("authorization_page_error_part2") }}
+      </span>
     </template>
 
   </p>
@@ -25,7 +27,6 @@ import {AuthorizationActionEnum} from "@/enum/AuthorizationActionEnum";
 import AuthenticationServiceInterface from "@/service/Authentication/AuthenticationServiceInterface";
 import UserServiceInterface from "@/service/User/UserServiceInterface";
 import TranslatorServiceInterface from "@/service/Translator/TranslatorServiceInterface";
-import {userModule} from "@/store/UserModule";
 
 export default defineComponent({
   name: "Authorization",
@@ -39,46 +40,41 @@ export default defineComponent({
     const route = useRoute()
     const query = route.query
     const action = query.action
-    const authorizationToken = query.token ? query.token.toString() : ""
+    const authorizationCode = query.code ? query.code.toString() : ""
     const state = ref("initial")
     const activateUserAction = AuthorizationActionEnum.ACTIVATE_USER
     const loginWithoutPasswordAction = AuthorizationActionEnum.LOGIN_WITHOUT_PASSWORD
 
     if (action === activateUserAction) { // ACTIVATE USER
-      activateUser(authorizationToken)
+      activateUser(authorizationCode)
     } else if (action === loginWithoutPasswordAction) { // LOGIN WITHOUT PASSWORD
-      loginWithoutPassword(authorizationToken)
+      loginWithoutPassword(authorizationCode)
     } else { // REDIRECT TO HOMEPAGE
       router.push("home")
     }
 
-    function activateUser(authorizationToken: string) {
-      userService.activateUser(authorizationToken)
-          .then((response: boolean) => {
-            state.value = "success"
-          })
-          .catch((errorResponse: Error) => {
-            state.value = "error"
-          })
+    async function activateUser(authorizationCode: string) {
+      try {
+        await userService.activateUser(authorizationCode)
+        state.value = "success"
+      } catch (error: any) {
+        state.value = "error"
+      }
     }
 
     async function fetchUserData() {
       // Fetch User data
-      const user = await userService.fetchCurrentUser()
-      userModule.setEmail(user.email)
+      await userService.fetchCurrentUser()
     }
 
-    function loginWithoutPassword(authorizationToken: string) {
-      const remember = query.remember === "true"
-
-      authenticationService.loginWithoutPassword(authorizationToken, remember)
-          .then((response: boolean) => {
-            fetchUserData()
-            router.push("profile")
-          })
-          .catch((errorResponse: Error) => {
-            state.value = "error"
-          })
+    async function loginWithoutPassword(authorizationCode: string) {
+      try {
+        await authenticationService.loginWithoutPassword(authorizationCode)
+        await fetchUserData()
+        await router.push("profile")
+      } catch (error: any) {
+        state.value = "error"
+      }
     }
 
     return {
@@ -89,7 +85,7 @@ export default defineComponent({
       t: translatorService
     }
   }
-});
+})
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

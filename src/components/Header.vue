@@ -41,14 +41,13 @@ export default defineComponent({
     const translatorService = inject("TranslatorServiceInterface") as TranslatorServiceInterface
     // Other
     const authenticated = computed(() => userModule.authenticated)
-    const email =  computed(() => userModule.email)
+    const email = computed(() => userModule.email)
     const routeName = ref(useRoute().name)
 
-    const onLogout = (authenticationService: AuthenticationServiceInterface) => {
+    const onLogout = async (authenticationService: AuthenticationServiceInterface) => {
       loaderModule.start()
-      authenticationService.logout().then(response => {
-        location.href = "/login"
-      })
+      await authenticationService.logout()
+      location.href = "/login"
     }
 
     const progress = computed(() => loaderModule.progress)
@@ -131,7 +130,7 @@ export default defineComponent({
     text-decoration: none;
   }
 
-  &__loader{
+  &__loader {
     bottom: 0;
     height: 2px;
     left: 0;
@@ -139,7 +138,7 @@ export default defineComponent({
     width: 100%;
   }
 
-  &__loader-progress{
+  &__loader-progress {
     background-color: $toreaBay;
     height: 100%;
     left: 0;

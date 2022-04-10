@@ -11,7 +11,7 @@ export default class UserService implements UserServiceInterface {
     constructor(private userModule: UserModule) {
     }
 
-    public async activateUser(authorizationToken: string): Promise<boolean> {
+    public async activateUser(authorizationCode: string): Promise<boolean> {
         const response = await axios.request({
                 url: API_GRAPHQL_ENDPOINT,
                 method: "POST",
@@ -23,7 +23,7 @@ export default class UserService implements UserServiceInterface {
                     query: ACTIVATE_USER_MUTATION,
                     variables: {
                         activateUserInput: {
-                            authorizationToken: authorizationToken
+                            authorizationCode: authorizationCode
                         }
                     }
                 }
@@ -62,10 +62,20 @@ export default class UserService implements UserServiceInterface {
     public async fetchCurrentUser(): Promise<FetchCurrentUserResponse> {
         const response = await axios.request({
             url: API_GRAPHQL_ENDPOINT + "?query=" + FETCH_CURRENT_USER_QUERY.replace(/\s/g, ""),
+            headers: {
+                "Authorization": "Bearer " + this.userModule.authenticationCode
+            },
             method: "GET",
             withCredentials: true
         })
 
-        return response.data.data.fetchCurrentUser
+        const user = response.data.data.fetchCurrentUser
+
+        if(user)
+        {
+            this.userModule.setEmail(user.email)
+        }
+
+        return user
     }
 }

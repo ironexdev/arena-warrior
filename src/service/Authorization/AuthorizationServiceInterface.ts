@@ -1,3 +1,3 @@
 export default interface AuthorizationServiceInterface {
-    createAuthorizationToken(email: string, action: string, remember: boolean): Promise<boolean>
+    createAuthorizationToken(email: string, action: string): Promise<boolean>
 }

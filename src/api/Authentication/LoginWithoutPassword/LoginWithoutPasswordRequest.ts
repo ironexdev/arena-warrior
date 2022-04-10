@@ -3,6 +3,9 @@ mutation ($loginWithoutPasswordInput: LoginWithoutPasswordInput!){
   loginWithoutPassword(
     loginWithoutPasswordInput: $loginWithoutPasswordInput
   )
+  {
+    authenticationCode
+  }
 }
 `
 

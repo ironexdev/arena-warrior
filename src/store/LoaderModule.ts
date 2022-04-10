@@ -3,7 +3,7 @@ import {store} from "@/store/index";
 
 @Module({dynamic: true, namespaced: true, name: "loaderModule", store})
 export default class LoaderModule extends VuexModule {
-    _progress: number = 0
+    private _progress: number = 0
 
     @Mutation
     start() {

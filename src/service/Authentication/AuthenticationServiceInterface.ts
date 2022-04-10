@@ -1,7 +1,10 @@
-export default interface AuthenticationServiceInterface {
-   login(email: string, password: string, remember: boolean): Promise<boolean>
+import LoginResponse from "@/api/Authentication/Login/LoginResponse";
+import LoginWithoutPasswordResponse from "@/api/Authentication/LoginWithoutPassword/LoginWithoutPasswordResponse";
 
-   loginWithoutPassword(authorizationToken: string, remember: boolean): Promise<boolean>;
+export default interface AuthenticationServiceInterface {
+   login(email: string, password: string): Promise<LoginResponse>
+
+   loginWithoutPassword(authorizationCode: string): Promise<LoginWithoutPasswordResponse>;
 
    logout(): Promise<boolean>;
 }

@@ -7,12 +7,12 @@ import RuleFactoryInterface from "@/components/Form/Rule/RuleFactoryInterface";
 import {ResponseStatusCodeEnum} from "@/enum/ResponseStatusCodeEnum";
 import AuthenticationServiceInterface from "@/service/Authentication/AuthenticationServiceInterface";
 import TranslatorServiceInterface from "@/service/Translator/TranslatorServiceInterface";
+import LoginResponse from "@/api/Authentication/Login/LoginResponse";
 
 export default class LoginForm extends AbstractForm {
 
     public email: FieldInterface
     public password: FieldInterface
-    public remember: FieldInterface
 
     constructor(
         private authenticationService: AuthenticationServiceInterface,
@@ -23,18 +23,16 @@ export default class LoginForm extends AbstractForm {
 
         this.email = new Field(this.translatorService.translate("login_form_email"), "", [this.ruleFactory.createRequiredRule()])
         this.password = new Field(this.translatorService.translate("login_form_password"), "", [this.ruleFactory.createRequiredRule()])
-        this.remember = new Field(this.translatorService.translate("login_form_remember"), true, [this.ruleFactory.createRequiredRule()])
     }
 
     public getFields(): FieldInterface[] {
         return [
             this.email,
-            this.password,
-            this.remember
+            this.password
         ]
     }
 
-    public async send(): Promise<boolean> {
+    public async send(): Promise<LoginResponse> {
         if (!this.valid) {
             throw new InvalidFormException()
         }
@@ -42,8 +40,7 @@ export default class LoginForm extends AbstractForm {
         try {
             return await this.authenticationService.login(
                 this.email.value,
-                this.password.value,
-                this.remember.value
+                this.password.value
             )
         } catch (errorResponse: any) {
             // TODO refactor DRY
